@@ -1,5 +1,8 @@
 name: 3. Terraform Destroy (UI Triggered)
 on: workflow_dispatch
+permissions:
+  id-token: write
+  contents: read
 jobs:
   destroy:
     name: Terraform Destroy
@@ -8,11 +11,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: feature/poc-infra-update
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::202533543944:role/InfraOrchestrator-GitHub-Role
           aws-region: ap-south-1
       - uses: hashicorp/setup-terraform@v2
       - name: Terraform Init
