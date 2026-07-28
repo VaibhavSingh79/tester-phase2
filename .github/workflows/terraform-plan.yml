@@ -1,37 +1,28 @@
 name: 1. Terraform Plan (Auto)
-
 on:
   push:
     branches: [main]
-
 permissions:
   id-token: write
   contents: read
-
 jobs:
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # Constant central role; injected per repo as an Actions variable so
-          # nothing account-specific is baked into the workflow file.
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-
       - uses: hashicorp/setup-terraform@v3
-
       - name: Terraform Init
         working-directory: ./infrastructure
         run: |
           for i in 1 2 3; do
             terraform init && break || sleep 10
           done
-
       - name: Terraform Plan
         working-directory: ./infrastructure
         run: terraform plan
