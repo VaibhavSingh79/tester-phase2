@@ -1,37 +1,29 @@
 name: 3. Terraform Destroy (UI Triggered)
-
 on: workflow_dispatch
-
 permissions:
   id-token: write
   contents: read
-
 concurrency:
   group: terraform-${{ github.repository }}
   cancel-in-progress: false
-
 jobs:
   destroy:
     name: Terraform Destroy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-
       - uses: hashicorp/setup-terraform@v3
-
       - name: Terraform Init
         working-directory: ./infrastructure
         run: |
           for i in 1 2 3; do
             terraform init && break || sleep 10
           done
-
       - name: Terraform Destroy
         working-directory: ./infrastructure
         run: terraform destroy -auto-approve
