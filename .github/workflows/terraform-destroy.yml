@@ -22,7 +22,9 @@ jobs:
         working-directory: ./infrastructure
         run: |
           for i in 1 2 3; do
-            terraform init && break || sleep 10
+            terraform init && break
+            if [ "$i" = "3" ]; then echo "terraform init failed after 3 attempts" >&2; exit 1; fi
+            sleep 10
           done
       - name: Terraform Destroy
         working-directory: ./infrastructure
