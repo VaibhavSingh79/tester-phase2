@@ -5,6 +5,9 @@ on:
 permissions:
   id-token: write
   contents: read
+concurrency:
+  group: terraform-${{ github.repository }}
+  cancel-in-progress: false
 jobs:
   plan:
     name: Terraform Plan
